@@ -59,7 +59,9 @@ SRCS			= 	ft_memset.c\
 					get_next_line.c\
 					get_next_line_utils.c\
 					calloc_lst.c\
-					ft_count_words.c
+					ft_count_words.c \
+					ft_putnbr_base.c \
+					ft_add_c_to_str.c
 SRCS_PATH		= srcs/
 SRCS_LOC		= $(addprefix $(SRCS_PATH),$(SRCS))
 OBJS			= $(SRCS_LOC:srcs/%.c=$(OBJS_DIR)/%.o)
