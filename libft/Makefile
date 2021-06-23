@@ -61,13 +61,14 @@ SRCS			= 	ft_memset.c\
 					calloc_lst.c\
 					ft_count_words.c \
 					ft_putnbr_base.c \
-					ft_add_c_to_str.c
+					ft_add_c_to_str.c \
+					ft_pow.c
 SRCS_PATH		= srcs/
 SRCS_LOC		= $(addprefix $(SRCS_PATH),$(SRCS))
 OBJS			= $(SRCS_LOC:srcs/%.c=$(OBJS_DIR)/%.o)
 OBJS_DIR		= objs
 CC          	= gcc
-CFLAGS      	= -Wall -Werror -Wextra
+CFLAGS      	= -g3 -Wall -Werror -Wextra
 INCLUDE			= include
 RM          	= rm -rf
 MKDIR			= mkdir -p

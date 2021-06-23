@@ -36,7 +36,10 @@ int	ft_add_c_to_str(char c, char **str)
 	i++;
 	new[i] = '\0';
 	if (*str != NULL)
+	{
 		free(*str);
+		*str = NULL;
+	}
 	*str = new;
 	return (1);
 }

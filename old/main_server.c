@@ -4,16 +4,16 @@ void	update_c(int signum, int *c, int *bit, siginfo_t *info)
 {
 	// (void)info;
 	int	value_bit;
-	// int tmp;
+	int tmp;
 
-	value_bit = ft_pow(2, *bit);
-	// tmp = *bit + 1;
-	// while (--tmp > 0)
-	// 	value_bit *= 2;
+	value_bit = 1;
+	tmp = *bit + 1;
+	while (--tmp > 0)
+		value_bit *= 2;
 	// printf("value_bit = %d, signal = ", value_bit);
 	// if (signum == SIGUSR1)
 	// 	write(1, "SIGUSR1\n", 8);
-	// else if (signum == SIGUSR2)
+	// else
 	// 	write(1, "SIGUSR2\n", 8);
 	if (signum == SIGUSR1)
 		*c += value_bit;
@@ -30,7 +30,7 @@ void	handle_sigusr(int signum, siginfo_t *info, void *context)
 {
 	// (void)signum;
 	(void)context;
-	static	char *str = NULL;
+	static	char *str = 0;
 	static	int c = 0;
 	static	int bit = 7;
 
@@ -46,12 +46,8 @@ void	handle_sigusr(int signum, siginfo_t *info, void *context)
 		// printf("dans else\n");
 		// else
 		// {
-			// printf("avant ft_add_c_to_str : c = |%c|\n", (char)c);
-			if (!ft_add_c_to_str((char)c, &str))
-			{
-				printf("Error Malloc");
-				exit (0);
-			}
+			// printf("avant ft_add_c_to_str : c = \n");
+			ft_add_c_to_str((char)c, &str);
 		// }
 		if (c == 0)
 		{
@@ -87,6 +83,6 @@ int main(int argc, char *argv[])
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	while (42)
-		pause();
+		usleep(800);
 	return (0);
 }

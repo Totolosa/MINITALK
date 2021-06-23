@@ -99,7 +99,7 @@ OBJS_CLIENT		= ${LST_CLIENT:srcs/%.c=$(DIR_OBJS)/%.o} ${OBJS_UTILS}
 DIR_OBJS		= objs
 CC				= gcc
 # CFLAGS			= -Wall -Werror -Wextra
-CFLAGS			= -Wall -Werror -Wextra -fsanitize=address -g3
+CFLAGS			=  -g3 -Wall -Werror -Wextra -fsanitize=address
 INCLUDE			= -Iinclude -I${LIBFT}/include
 RM				= rm -rf
 MKDIR			= mkdir -p
@@ -137,7 +137,7 @@ fclean:			clean
 re:				fclean all
 
 .PHONY: 		clean fclean all re compil libft
-# .SILENT:		clean fclean all re compil libft ${OBJS_SERVER} ${OBJS_CLIENT} $(NAME_SERVER) ${NAME_CLIENT} $(DIR_OBJS)
+.SILENT:		clean fclean all re compil libft ${OBJS_SERVER} ${OBJS_CLIENT} $(NAME_SERVER) ${NAME_CLIENT} $(DIR_OBJS)
 
 
 

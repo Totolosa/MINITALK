@@ -71,5 +71,6 @@ void	*calloc_lst(unsigned long size, t_list **lst);
 int		ft_count_words(char *str, char c);
 void	ft_putnbr_base(int nbr, char *base);
 int		ft_add_c_to_str(char c, char **str);
+int		ft_pow(int nbr, int pow);
 
 #endif

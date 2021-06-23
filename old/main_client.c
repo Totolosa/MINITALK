@@ -1,27 +1,12 @@
 #include "minitalk.h"
 
-int	received_sig(int act)
-{
-	static int	flag = 0;
-
-	if (act)
-		flag = 1;
-	else if (flag)
-	{
-		flag = 0;
-		return (1);
-	}
-	return (0);
-}
-
 void	choose_signal(int nbr, int *res, int c, int pid)
 {
 	// printf("res = %d\n", *res);
-	// ft_putstr_fd("res = ", 1);
-	// ft_putnbr_fd(*res, 1);
-	// ft_putstr_fd("\n", 1);
+	ft_putstr_fd("res = ", 1);
+	ft_putnbr_fd(*res, 1);
+	ft_putstr_fd("\n", 1);
 
-	// if (c & nbr)
 	if (*res + nbr <= c)
 	{
 		kill(pid, SIGUSR1);
@@ -30,13 +15,10 @@ void	choose_signal(int nbr, int *res, int c, int pid)
 	else
 	{
 		kill(pid, SIGUSR2);
+
 	}
 	// sleep(1);
-	usleep(5000);
-	// pause();
-
-	// while (!received_sig(0))
-	// 	;
+	usleep(800);
 }
 
 void	send_carac_bits(int c, int pid)
@@ -73,9 +55,9 @@ void	treat_str(int pid, char *str)
 	while (str[++i])
 	{
 		send_carac_bits(str[i], pid);
-		// ft_putstr_fd("str[i] = ", 1);
-		// write(1, &(str[i]), 1);
-		// ft_putstr_fd("\n", 1);
+		ft_putstr_fd("str[i] = ", 1);
+		write(1, &(str[i]), 1);
+		ft_putstr_fd("\n", 1);
 		// printf("str[i] = %c\n", str[i]);
 	}
 	i = -1;
@@ -87,14 +69,12 @@ void	treat_str(int pid, char *str)
 	
 }
 
-void	handle_sigusr(int signum)
+void	handle_sigusr(int signum, siginfo_t *info, void *context)
 {
 	// (void)signum;
-	// (void)context;
-	// (void)info;
+	(void)context;
+	(void)info;
 
-	// if (signum == SIGUSR1)
-	// 	received_sig(1);
 	if (signum == SIGUSR2)
 		printf("Message sent !\n");
 }
@@ -103,19 +83,16 @@ int main(int argc, char *argv[])
 {
 	(void)argv;
 	int	pid;
-	// struct sigaction sa;
+	struct sigaction sa;
 
 	// ft_putstr_fd("PID client = ", 1);
 	// ft_putnbr_fd(getpid(), 1);
 	// write(1, "\n", 1);
 	
-	// sa.sa_flags = SA_SIGINFO;
-	// sa.sa_sigaction = handle_sigusr;
-	// sigaction(SIGUSR1, &sa, NULL);
-	// sigaction(SIGUSR2, &sa, NULL);
-
-	signal(SIGUSR1, &handle_sigusr);
-	signal(SIGUSR2, &handle_sigusr);
+	sa.sa_flags = SA_SIGINFO;
+	sa.sa_sigaction = handle_sigusr;
+	sigaction(SIGUSR1, &sa, NULL);
+	sigaction(SIGUSR2, &sa, NULL);
 	if (argc != 3)
 	{
 		ft_putstr_fd("\033[31m\033[1mWrong number of arguments\n\033[0m", 1);
