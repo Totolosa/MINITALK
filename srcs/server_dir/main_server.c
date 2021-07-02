@@ -1,89 +1,98 @@
 #include "minitalk.h"
 
-void	update_c(int signum, int *c, int *bit, siginfo_t *info)
+int	add_char(int *len, int *max, char c, char **str)
 {
-	// (void)info;
-	int	value_bit;
-	// int tmp;
+	char	*new;
+	int		i;
 
-	value_bit = ft_pow(2, *bit);
-	// tmp = *bit + 1;
-	// while (--tmp > 0)
-	// 	value_bit *= 2;
-	// printf("value_bit = %d, signal = ", value_bit);
-	// if (signum == SIGUSR1)
-	// 	write(1, "SIGUSR1\n", 8);
-	// else if (signum == SIGUSR2)
-	// 	write(1, "SIGUSR2\n", 8);
-	if (signum == SIGUSR1)
-		*c += value_bit;
-	// (*bit)++;
-	// printf("test avant kill\n");
-	kill(info->si_pid, SIGUSR1);
-
-	// ft_putstr_fd("PID sender = ", 1);
-	// ft_putnbr_fd(info->si_pid, 1);
-	// write(1, "\n", 1);
+	i = 0;
+	new = NULL;
+	if (*len >= *max)
+	{
+		*max *= 2;
+		new = ft_calloc(*max + 1, sizeof(char));
+		if (!new)
+			return (0);
+		while (i < *len)
+		{
+			new[i] = (*str)[i];
+			i++;
+		}
+		free(*str);
+		*str = new;
+	}
+	(*str)[*len] = c;
+	return (1);
 }
 
-void	handle_sigusr(int signum, siginfo_t *info, void *context)
+void	send_sig_server(int sig, siginfo_t *siginfo)
 {
-	// (void)signum;
-	(void)context;
-	static	char *str = NULL;
-	static	int c = 0;
-	static	int bit = 7;
+	static int	before_pid;
 
-	// printf("test\n");
-	if (bit >= 0)
+	if (siginfo->si_pid)
+		before_pid = siginfo->si_pid;
+	if (sig == SIGUSR1)
 	{
-		update_c(signum, &c, &bit, info);
-		bit--;
-		// kill(info->si_pid, SIGUSR1);
+		if (kill(before_pid, SIGUSR1))
+			quit_prog("kill SIGUSR1 error\n");
 	}
+	else if (sig == SIGUSR2)
+		if (kill(before_pid, SIGUSR2))
+			quit_prog("kill SIGUSR2 error\n");
+}
+
+void	str_finished(int *i, char **str, siginfo_t *siginfo)
+{
+	send_sig_server(SIGUSR1, siginfo);
+	send_sig_server(SIGUSR2, siginfo);
+	ft_putstr_fd(*str, 1);
+	free(*str);
+	*str = NULL;
+	*i = 0;
+}
+
+void	hdl_sigusr(int signum, siginfo_t *siginfo, void *context)
+{
+	static char	*str = 0;
+	static int	c = 0;
+	static int	i = 0;
+	static int	bit = 7;
+	static int	max = 8;
+
+	(void)context;
+	if (!str)
+		str = ft_calloc(max, sizeof(char));
+	if (signum == SIGUSR1)
+		c += ft_pow(2, bit);
+	bit--;
 	if (bit < 0)
 	{
-		// printf("dans else\n");
-		// else
-		// {
-			// printf("avant ft_add_c_to_str : c = |%c|\n", (char)c);
-			if (!ft_add_c_to_str((char)c, &str))
-			{
-				printf("Error Malloc");
-				exit (0);
-			}
-		// }
+		if (!add_char(&i, &max, c, &str))
+			quit_prog("Error malloc str\n");
 		if (c == 0)
-		{
-			ft_putstr_fd(str, 1);
-			kill(info->si_pid, SIGUSR2);
-			free(str);
-			str = NULL;
-		}
-		bit = 7;
+			str_finished(&i, &str, siginfo);
+		else
+			i++;
 		c = 0;
+		bit = 7;
 	}
-	// printf("bit = |%d|, c = |%d|, str = |%s|\n", bit, c, str);
-
-	// ft_putstr_fd("PID sender = ", 1);
-	// ft_putnbr_fd(info->si_pid, 1);
-	// write(1, "\n", 1);
-	// kill(info->si_pid, SIGUSR1);
+	if (str)
+		send_sig_server(SIGUSR1, siginfo);
 }
 
-int main(int argc, char *argv[])
+int	main(int argc, char *argv[])
 {
-	(void)argc;
-	(void)argv;
+	struct sigaction	sa;
 
+	(void)argv;
+	if (argc != 1)
+		quit_prog("Wrong number of arguments\n");
+	ft_bzero(&sa, sizeof(sa));
 	ft_putstr_fd("\033[32mPID = \033[1m", 1);
 	ft_putnbr_fd(getpid(), 1);
 	ft_putstr_fd("\033[0m\n", 1);
-
-	setbuf(stdout, NULL);
-	struct sigaction sa;
 	sa.sa_flags = SA_SIGINFO;
-	sa.sa_sigaction = handle_sigusr;
+	sa.sa_sigaction = &hdl_sigusr;
 	sigaction(SIGUSR1, &sa, NULL);
 	sigaction(SIGUSR2, &sa, NULL);
 	while (42)

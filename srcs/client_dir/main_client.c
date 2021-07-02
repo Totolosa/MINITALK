@@ -1,132 +1,65 @@
 #include "minitalk.h"
 
-int	received_sig(int act)
+void	send_sig_client(int c, int nbr, long long pid)
 {
-	static int	flag = 0;
+	int	bit;
 
-	if (act)
-		flag = 1;
-	else if (flag)
+	if (c & nbr)
 	{
-		flag = 0;
-		return (1);
-	}
-	return (0);
-}
-
-void	choose_signal(int nbr, int *res, int c, int pid)
-{
-	// printf("res = %d\n", *res);
-	// ft_putstr_fd("res = ", 1);
-	// ft_putnbr_fd(*res, 1);
-	// ft_putstr_fd("\n", 1);
-
-	// if (c & nbr)
-	if (*res + nbr <= c)
-	{
-		kill(pid, SIGUSR1);
-		*res += nbr;
+		bit = 1;
+		if (kill(pid, SIGUSR1))
+			quit_prog("kill SIGUSR1 error\n");
 	}
 	else
 	{
-		kill(pid, SIGUSR2);
+		bit = 0;
+		if (kill(pid, SIGUSR2))
+			quit_prog("kill SIGUSR2 error\n");
 	}
-	// sleep(1);
-	usleep(5000);
-	// pause();
-
-	// while (!received_sig(0))
-	// 	;
+	usleep(1000);
 }
 
-void	send_carac_bits(int c, int pid)
+void	send_char(char c, long long pid)
 {
-	int res;
-	
-	res = 0;
-	choose_signal(128, &res, (int)c, pid);
-	// printf("test\n");
-	// printf("1 : res = %d\n", res);
-	choose_signal(64, &res, (int)c, pid);
-	// printf("2 : res = %d\n", res);
-	choose_signal(32, &res, (int)c, pid);
-	// printf("3 : res = %d\n", res);
-	choose_signal(16, &res, (int)c, pid);
-	// printf("4 : res = %d\n", res);
-	choose_signal(8, &res, (int)c, pid);
-	// printf("5 : res = %d\n", res);
-	choose_signal(4, &res, (int)c, pid);
-	// printf("6 : res = %d\n", res);
-	choose_signal(2, &res, (int)c, pid);
-	// printf("7 : res = %d\n", res);
-	choose_signal(1, &res, (int)c, pid);
-	// printf("8 : res = %d\n", res);
+	send_sig_client(c, 128, pid);
+	send_sig_client(c, 64, pid);
+	send_sig_client(c, 32, pid);
+	send_sig_client(c, 16, pid);
+	send_sig_client(c, 8, pid);
+	send_sig_client(c, 4, pid);
+	send_sig_client(c, 2, pid);
+	send_sig_client(c, 1, pid);
 }
 
-void	treat_str(int pid, char *str)
+void	send_str(char *str, long long pid)
 {
 	int	i;
-	// int	bit;
-	// int	carac;
-	
-	i = -1;
-	while (str[++i])
-	{
-		send_carac_bits(str[i], pid);
-		// ft_putstr_fd("str[i] = ", 1);
-		// write(1, &(str[i]), 1);
-		// ft_putstr_fd("\n", 1);
-		// printf("str[i] = %c\n", str[i]);
-	}
-	i = -1;
-	while (++i < 8)
-	{
-		kill(pid, SIGUSR2);
-		usleep(800);
-	}
-	
+
+	i = 0;
+	while (str[i])
+		send_char(str[i++], pid);
+	send_char('\0', pid);
 }
 
-void	handle_sigusr(int signum)
+void	hdl_sigusr(int signum)
 {
-	// (void)signum;
-	// (void)context;
-	// (void)info;
-
-	// if (signum == SIGUSR1)
-	// 	received_sig(1);
 	if (signum == SIGUSR2)
-		printf("Message sent !\n");
+		quit_prog("\nMessage sent!\n");
 }
 
-int main(int argc, char *argv[])
+int	main(int argc, char *argv[])
 {
-	(void)argv;
-	int	pid;
-	// struct sigaction sa;
+	long long	pid;
 
-	// ft_putstr_fd("PID client = ", 1);
-	// ft_putnbr_fd(getpid(), 1);
-	// write(1, "\n", 1);
-	
-	// sa.sa_flags = SA_SIGINFO;
-	// sa.sa_sigaction = handle_sigusr;
-	// sigaction(SIGUSR1, &sa, NULL);
-	// sigaction(SIGUSR2, &sa, NULL);
-
-	signal(SIGUSR1, &handle_sigusr);
-	signal(SIGUSR2, &handle_sigusr);
 	if (argc != 3)
-	{
-		ft_putstr_fd("\033[31m\033[1mWrong number of arguments\n\033[0m", 1);
-		exit(1);
-	}
+		quit_prog("Wrong number of arguments\n");
 	pid = ft_atoi(argv[1]);
-	if (pid <= 0 || pid > INT_MAX)
-	{
-		ft_putstr_fd("\033[31m\033[1mWrong PID\n\033[0m", 1);
-		exit(1);
-	}
-	treat_str(pid, argv[2]);
+	if (pid < 0 || pid > INT_MAX)
+		quit_prog("Wrong PID number\n");
+	signal(SIGUSR1, &hdl_sigusr);
+	signal(SIGUSR2, &hdl_sigusr);
+	send_str(argv[2], pid);
+	while (42)
+		pause();
 	return (0);
 }

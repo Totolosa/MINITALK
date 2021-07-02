@@ -4,14 +4,14 @@ static int	init(char **new, int *len, char **str)
 {
 	if (*str != NULL)
 	{
-		*new = malloc(ft_strlen(*str) + 2);
+		*new = ft_calloc(ft_strlen(*str) + 2, 1);
 		if (*new == NULL)
 			return (0);
 		*len = ft_strlen(*str);
 	}
 	else
 	{
-		*new = malloc(2);
+		*new = ft_calloc(2, 1);
 		if (*new == NULL)
 			return (0);
 		*len = 0;
