@@ -1,72 +1,3 @@
-# ERASE	= \033[2K\r
-# GREY	= \033[30m
-# RED		= \033[31m
-# GREEN	= \033[32m
-# YELLOW	= \033[33m
-# BLUE	= \033[34m
-# PINK	= \033[35m
-# CYAN	= \033[36m
-# WHITE	= \033[37m
-# END		= \033[0m
-# BOLD	= \033[1m
-# UNDER	= \033[4m
-# SUR		= \033[7m
-
-# NAME			= minitalk
-# LST_SRCS		= main.c
-# SRCS_DIR		= srcs
-# DIR_OBJS		= objs
-# SRCS			= $(addprefix $(SRCS_DIR)/,$(LST_SRCS))
-# OBJS			= $(LST_SRCS:%.c=$(DIR_OBJS)/%.o)
-# CC				= clang
-# # CFLAGS			= -Wall -Werror -Wextra
-# # CFLAGS			= -g
-# CFLAGS			= -Wall -Werror -Wextra -fsanitize=address -g3
-# # CFLAGS			= -fsanitize=address -g3
-# INCLUDE			= -Iinclude -I${LIBFT}/include
-# RM				= rm -rf
-# MKDIR			= mkdir -p
-# LIBFT			= libft
-
-# all:			libft $(NAME)
-
-# $(DIR_OBJS):
-# 				$(MKDIR) $@
-
-# libft:
-# 				printf "$(ERASE)${GREEN}--> LIBFT <--${END}"
-# 				make -C ${LIBFT} > SILENT
-# 				$(RM) SILENT
-# 				printf "$(ERASE)"
-
-# ${NAME}:		libft/libft.a ${DIR_OBJS} ${OBJS}
-# 				${CC} ${CFLAGS} ${INCLUDE} ${OBJS} -L ${LIBFT} -lft -o ${NAME}
-# 				echo "$(BOLD)${GREEN}$(ERASE)--> minitalk generated <--${END}"
-
-# $(DIR_OBJS)/%.o:$(SRCS_DIR)/%.c include/*.h
-# 				$(MKDIR) $(dir $@)
-# 				${CC} ${CFLAGS} $(INCLUDE) -c  $< -o $@
-# 				printf "$(ERASE)--> [$(GREEN)$<$(END)] <--"
-
-# clean:
-# 				${RM} $(OBJS)
-# 				make clean -C $(LIBFT) > SILENT
-# 				$(RM) SILENT
-
-# fclean:			clean
-# 				${RM} $(DIR_OBJS) $(NAME)
-# 				printf "$(ERASE)${GREEN}--> LIBFT CLEAN<--${END}"
-# 				make fclean -C $(LIBFT) > SILENT
-# 				$(RM) SILENT
-# 				printf "$(ERASE)${GREEN}--> MINITALK CLEAN <--${END}"
-
-# re:				fclean all
-
-# .PHONY: 		clean fclean all re compil libft
-# .SILENT:		clean fclean all re compil libft $(OBJS) $(NAME) $(DIR_OBJS)
-
-
-
 ERASE   = \033[2K\r
 GREY    = \033[30m
 RED     = \033[31m
@@ -89,7 +20,7 @@ DIR_CLIENT		= $(DIR_SRCS)/client_dir
 DIR_UTILS		= $(DIR_SRCS)/utils
 SRCS_SERVER		=	main_server.c 
 SRCS_CLIENT		= 	main_client.c 
-SRCS_UTILS		=	
+SRCS_UTILS		=	quit_prog.c
 LST_UTILS		= $(addprefix $(DIR_UTILS)/,$(SRCS_UTILS))
 LST_SERVER		= $(addprefix $(DIR_SERVER)/,$(SRCS_SERVER))
 LST_CLIENT		= $(addprefix $(DIR_CLIENT)/,$(SRCS_CLIENT))
